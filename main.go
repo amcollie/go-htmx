@@ -14,7 +14,7 @@ func main() {
 	fmt.Println("Hello, World!")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("html/index.html"))
+		tmpl := template.Must(template.ParseFiles("templates/index.html"))
 
 		db, dbConnectionError := db.DB()
 		if dbConnectionError != nil {
@@ -46,7 +46,7 @@ func main() {
 			log.Fatal(convBoxOffficeErr)
 		}
 
-		tmpl := template.Must(template.ParseFiles("html/index.html"))
+		tmpl := template.Must(template.ParseFiles("templates/index.html"))
 
 		db, dbConnectionError := db.DB()
 		if dbConnectionError != nil {
