@@ -19,6 +19,13 @@ type Film struct {
 	BoxOffice float64
 }
 
+type FilmDsp struct {
+	Title     string
+	Director  string
+	Year      int
+	BoxOffice string
+}
+
 type MovieDB struct {
 	gorm.Model
 	Title     string `gorm:"uniqueIndex:title_yr_idx"`

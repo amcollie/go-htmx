@@ -8,13 +8,18 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/dustin/go-humanize"
 )
 
 func main() {
 	fmt.Println("Hello, World!")
 
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("templates/index.html"))
+		tmpl := template.Must(template.ParseFiles("static/templates/index.html", "static/templates/partials/table-data.html"))
 
 		db, dbConnectionError := db.DB()
 		if dbConnectionError != nil {
@@ -27,8 +32,14 @@ func main() {
 			log.Println(result.Error)
 		}
 
-		films := make(map[string][]models.Film)
-		films["Films"] = append(films["Films"], filmList...)
+		films := make(map[string][]models.FilmDsp)
+
+		for _, film := range filmList {
+			films["Films"] = append(
+				films["Films"],
+				models.FilmDsp{Title: film.Title, Director: film.Director, Year: film.Year, BoxOffice: humanize.Commaf(film.BoxOffice)},
+			)
+		}
 
 		tmpl.Execute(w, films)
 	})
@@ -41,12 +52,12 @@ func main() {
 		if convIntErr != nil {
 			log.Fatal(convIntErr)
 		}
-		boxOffice, convBoxOffficeErr := strconv.ParseFloat(r.PostFormValue("boxOffice"), 64)
-		if convBoxOffficeErr != nil {
-			log.Fatal(convBoxOffficeErr)
+		boxOffice, convBoxOfficeErr := strconv.ParseFloat(r.PostFormValue("boxOffice"), 64)
+		if convBoxOfficeErr != nil {
+			log.Fatal(convBoxOfficeErr)
 		}
 
-		tmpl := template.Must(template.ParseFiles("templates/index.html"))
+		tmpl := template.Must(template.ParseFiles("static/templates/index.html", "static/templates/partials/table-data.html"))
 
 		db, dbConnectionError := db.DB()
 		if dbConnectionError != nil {
@@ -59,7 +70,8 @@ func main() {
 			log.Println(result.Error)
 		}
 
-		tmpl.ExecuteTemplate(w, "film-list-element", film)
+		filmDsp := models.FilmDsp{Title: title, Director: director, Year: year, BoxOffice: humanize.Commaf(boxOffice)}
+		tmpl.ExecuteTemplate(w, "film-table-element", filmDsp)
 	})
 
 	http.HandleFunc("/edit-film", func(w http.ResponseWriter, r *http.Request) {
