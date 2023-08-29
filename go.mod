@@ -3,6 +3,7 @@ module amcollie/go-htmx
 go 1.20
 
 require (
+	github.com/dustin/go-humanize v1.0.1
 	gorm.io/driver/sqlite v1.5.3
 	gorm.io/gorm v1.25.4
 )

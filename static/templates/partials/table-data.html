@@ -1,0 +1,12 @@
+{{ define "tableData"}}
+    {{ range .Films}}
+        {{ block "film-table-element" .}}
+            <tr scope="row">
+                <td>{{ .Title }}</td>
+                <td>{{ .Director }}</td>
+                <td class="text-center">{{ .Year }}</td>
+                <td class="text-end">{{ .BoxOffice }}</td>
+            </tr>
+        {{ end }}
+    {{ end }}
+{{ end }}
